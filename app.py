@@ -171,6 +171,7 @@ def transcribe_youtube():
             output_path = os.path.join(UPLOAD_FOLDER, f'{video_id}')
             
             # First, try to get captions/subtitles
+# First, try to get captions/subtitles
             subtitle_opts = {
                 'skip_download': True,
                 'writesubtitles': True,
@@ -180,6 +181,23 @@ def transcribe_youtube():
                 'outtmpl': output_path,
                 'quiet': True,
                 'no_warnings': True,
+                'nocheckcertificate': True,
+                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'extractor_args': {
+                    'youtube': {
+                        'player_client': ['android', 'web', 'ios'],
+                        'skip': ['dash', 'hls']
+                    }
+                },
+                'http_headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                    'Accept-Language': 'en-us,en;q=0.5',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Referer': 'https://www.youtube.com/',
+                },
+                'cookiefile': None,
+                'age_limit': None,
             }
             
             has_subtitles = False
