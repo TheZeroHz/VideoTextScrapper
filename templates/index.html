@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N.A.M.O.R. x BUBT HUB - Audio Transcription</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 80px 20px 80px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .logo p {
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            color: #666;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .tab:hover {
+            color: #1a1a1a;
+        }
+
+        .tab.active {
+            color: #1a1a1a;
+            border-bottom-color: #1a1a1a;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .youtube-input-container {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .youtube-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .youtube-input:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.1);
+        }
+
+        .btn-transcribe {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-transcribe:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #2a2a2a 0%, #4a4a4a 100%);
+        }
+
+        .btn-transcribe:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .youtube-hint {
+            color: #666;
+            font-size: 0.85em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .upload-area {
+            border: 3px dashed #3a3a3a;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.03) 0%, rgba(74, 74, 74, 0.03) 100%);
+            margin-bottom: 30px;
+        }
+
+        .upload-area:hover {
+            border-color: #1a1a1a;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.06) 0%, rgba(74, 74, 74, 0.06) 100%);
+            transform: scale(1.02);
+        }
+
+        .upload-area.dragging {
+            border-color: #1a1a1a;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.1) 0%, rgba(74, 74, 74, 0.1) 100%);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-info, .video-info {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid #1a1a1a;
+        }
+
+        .file-info.active, .video-info.active {
+            display: block;
+        }
+
+        .file-info.video-file {
+            border-left-color: #3a3a3a;
+            background: linear-gradient(135deg, rgba(58, 58, 58, 0.05) 0%, rgba(74, 74, 74, 0.05) 100%);
+        }
+
+        .info-title {
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .info-detail {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .progress-container {
+            display: none;
+            margin-bottom: 30px;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a1a1a 0%, #3a3a3a 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .progress-message {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            animation: fadeInMessage 0.3s ease-in;
+        }
+
+        @keyframes fadeInMessage {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .transcription-result {
+            display: none;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.02) 0%, rgba(74, 74, 74, 0.02) 100%);
+            padding: 0;
+            border-radius: 15px;
+            border-left: 5px solid #1a1a1a;
+            max-height: 500px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .transcription-result.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .transcription-result.live {
+            border-left-color: #4caf50;
+            animation: pulse-border 2s ease-in-out infinite;
+            position: relative;
+            overflow: visible;
+        }
+
+        .transcription-result.live::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #1a1a1a, #3a3a3a, #4a4a4a, #1a1a1a);
+            background-size: 400% 400%;
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0.2;
+            animation: gradient-shift 3s ease infinite;
+            filter: blur(10px);
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes pulse-border {
+            0%, 100% {
+                border-left-color: #4caf50;
+            }
+            50% {
+                border-left-color: #81c784;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .transcript-item.new {
+            animation: slideInUp 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .transcript-item.new::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: shimmer 1.5s ease-out;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #2a2a2a;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            animation: pulse-dot 1.5s ease-in-out infinite;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        .sound-wave {
+            display: inline-flex;
+            gap: 3px;
+            margin-left: 10px;
+        }
+
+        .sound-bar {
+            width: 3px;
+            height: 12px;
+            background: #4caf50;
+            border-radius: 2px;
+            animation: sound-wave 1s ease-in-out infinite;
+        }
+
+        .sound-bar:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .sound-bar:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .sound-bar:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .sound-bar:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes sound-wave {
+            0%, 100% {
+                height: 8px;
+            }
+            50% {
+                height: 16px;
+            }
+        }
+
+        .transcription-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.04) 0%, rgba(74, 74, 74, 0.04) 100%);
+            border-bottom: 2px solid rgba(26, 26, 26, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .source-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .source-badge.captions {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        }
+
+        .source-badge.audio {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        .source-icon {
+            font-size: 1em;
+        }
+
+        .transcription-title {
+            font-size: 1.3em;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .transcription-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .btn-action {
+            background: #2a2a2a;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action:hover {
+            transform: scale(1.05);
+            background: #3a3a3a;
+        }
+
+        .btn-action.download {
+            background: #1a1a1a;
+        }
+
+        .btn-action.download:hover {
+            background: #2a2a2a;
+        }
+
+        .transcription-text {
+            color: #444;
+            line-height: 1.8;
+            font-size: 1.05em;
+            padding: 25px;
+            padding-bottom: 30px;
+            overflow-y: auto;
+            max-height: 430px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .transcript-item {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(26, 26, 26, 0.1);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .transcript-item:last-child {
+            border-bottom: none;
+        }
+
+        .transcript-time {
+            color: #1a1a1a;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.08) 0%, rgba(74, 74, 74, 0.08) 100%);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px solid rgba(26, 26, 26, 0.15);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .transcript-time:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-color: #1a1a1a;
+        }
+
+        .transcript-time.active {
+            background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+            color: white;
+            border-color: #1a1a1a;
+            animation: pulse-time 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-time {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 4px 16px rgba(102, 126, 234, 0.6);
+            }
+        }
+
+        .transcript-text {
+            color: #333;
+            line-height: 1.8;
+            font-size: 1.05em;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .typing-cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: #1a1a1a;
+            margin-left: 2px;
+            animation: blink 1s step-end infinite;
+            vertical-align: text-bottom;
+        }
+
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0;
+            }
+        }
+
+        .typing-text {
+            display: inline;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+            border-left: 5px solid #c62828;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #2a2a2a 0%, #4a4a4a 100%);
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .processing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2a2a2a 0%, #4a4a4a 100%);
+        }
+
+        .transcription-text::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .transcription-text::-webkit-scrollbar-track {
+            background: rgba(26, 26, 26, 0.05);
+            border-radius: 10px;
+        }
+
+        .transcription-text::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .transcription-header {
+                padding: 15px 20px;
+            }
+
+            .transcription-title {
+                font-size: 1.1em;
+            }
+
+            .btn-action {
+                padding: 6px 15px;
+                font-size: 0.85em;
+            }
+
+            .transcription-text {
+                padding: 20px;
+                font-size: 1em;
+                max-height: 350px;
+            }
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 0;
+            padding: 20px 30px;
+            width: 100%;
+            max-width: 100%;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .top-bar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            width: 100%;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .tech-quote {
+            color: #333;
+            font-size: 0.9em;
+            font-style: italic;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .quote-icon {
+            color: #666;
+            margin-right: 8px;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .clock {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1a1a;
+            font-weight: 600;
+            font-size: 0.95em;
+            background: rgba(26, 26, 26, 0.05);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .clock-icon {
+            font-size: 1.1em;
+        }
+
+        .manual-btn {
+            background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .manual-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #2a2a2a 0%, #4a4a4a 100%);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideInUp 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .modal-title {
+            font-size: 2em;
+            color: #1a1a1a;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s ease;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: #1a1a1a;
+            transform: rotate(90deg);
+        }
+
+        .manual-section {
+            margin-bottom: 30px;
+        }
+
+        .manual-section h2 {
+            color: #1a1a1a;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .manual-section h3 {
+            color: #2a2a2a;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+
+        .manual-section p, .manual-section li {
+            color: #444;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+
+        .manual-section ul {
+            margin-left: 20px;
+        }
+
+        .manual-section code {
+            background: #f5f5f5;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #1a1a1a;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-logo {
+            font-size: 1.2em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-divider {
+            height: 20px;
+            width: 1px;
+            background: #d0d0d0;
+        }
+
+        .developer-credit {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .developer-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .developer-name:hover {
+            color: #3a3a3a;
+        }
+
+        .developer-name::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+            transition: width 0.3s ease;
+        }
+
+        .developer-name:hover::after {
+            width: 100%;
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #1a1a1a;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(26, 26, 26, 0.05);
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .github-link:hover {
+            background: rgba(26, 26, 26, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .github-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-left {
+                flex-direction: column;
+            }
+
+            .footer-divider {
+                width: 40px;
+                height: 1px;
+            }
+
+            .container {
+                padding: 30px 20px;
+            }
+
+            .logo h1 {
+                font-size: 2em;
+            }
+
+            body {
+                padding: 80px 15px 80px 15px;
+            }
+
+            .top-bar {
+                flex-direction: column;
+                padding: 12px 20px;
+                gap: 10px;
+            }
+
+            .tech-quote {
+                text-align: center;
+                font-size: 0.85em;
+            }
+
+            .top-bar-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .modal-content {
+                padding: 30px 20px;
+                width: 95%;
+            }
+
+            .modal-title {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="tech-quote">
+            <span class="quote-icon">💡</span>
+            <span id="quoteText">Loading quote...</span>
+        </div>
+        <div class="top-bar-right">
+            <div class="clock">
+                <span class="clock-icon">🕐</span>
+                <span id="currentTime">--:--:--</span>
+            </div>
+            <button class="manual-btn" onclick="openManual()">
+                📖 User Manual
+            </button>
+        </div>
+    </div>
+
+    <div id="userManual" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title">📖 User Manual</h1>
+                <button class="close-btn" onclick="closeManual()">&times;</button>
+            </div>
+
+            <div class="manual-section">
+                <h2>🚀 Getting Started</h2>
+                <p>Welcome to N.A.M.O.R. x BUBT HUB Audio Transcription System! This powerful tool converts audio and video files into text with real-time typing animation.</p>
+            </div>
+
+            <div class="manual-section">
+                <h2>🎥 YouTube Transcription</h2>
+                <h3>How to Use:</h3>
+                <ol>
+                    <li>Click on the <strong>"YouTube URL"</strong> tab</li>
+                    <li>Paste any YouTube video URL into the input field</li>
+                    <li>Click <strong>"Transcribe"</strong> button</li>
+                    <li>Watch as the transcription appears in real-time with typing animation!</li>
+                </ol>
+                <h3>Supported URLs:</h3>
+                <ul>
+                    <li>Standard: <code>youtube.com/watch?v=...</code></li>
+                    <li>Short: <code>youtu.be/...</code></li>
+                    <li>Embedded: <code>youtube.com/embed/...</code></li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h2>📁 File Upload Transcription</h2>
+                <h3>Supported Formats:</h3>
+                <ul>
+                    <li><strong>Audio:</strong> MP3, WAV, M4A, AAC, OGG, FLAC, WMA</li>
+                    <li><strong>Video:</strong> MP4, AVI, MKV, MOV, FLV, WMV, WebM, MPEG, 3GP</li>
+                </ul>
+                <h3>How to Use:</h3>
+                <ol>
+                    <li>Click on the <strong>"Upload Audio/Video"</strong> tab</li>
+                    <li>Drag & drop your file OR click to browse</li>
+                    <li>Wait for automatic transcription to begin</li>
+                    <li>Read the text as it types out character-by-character!</li>
+                </ol>
+            </div>
+
+            <div class="manual-section">
+                <h2>✨ Features</h2>
+                <ul>
+                    <li><strong>Real-time Typing Animation:</strong> Text appears smoothly, keeping you engaged</li>
+                    <li><strong>Timestamped Segments:</strong> YouTube videos show time markers for easy navigation</li>
+                    <li><strong>Live Indicator:</strong> Visual feedback with pulsing green dot and sound waves</li>
+                    <li><strong>Progress Tracking:</strong> See exactly what stage the transcription is at</li>
+                    <li><strong>Copy to Clipboard:</strong> One-click copying of entire transcription</li>
+                    <li><strong>Download as TXT:</strong> Save transcriptions for later use</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h2>⚡ Tips for Best Results</h2>
+                <ul>
+                    <li>Use clear audio with minimal background noise</li>
+                    <li>Videos under 10 minutes work fastest</li>
+                    <li>English language provides best accuracy</li>
+                    <li>Ensure stable internet connection for YouTube videos</li>
+                    <li>For large files, be patient - typing animation makes wait time enjoyable!</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h2>🎯 Understanding the Interface</h2>
+                <ul>
+                    <li><strong>🟢 LIVE Badge:</strong> Indicates active transcription in progress</li>
+                    <li><strong>Progress Bar:</strong> Shows completion percentage</li>
+                    <li><strong>⏱️ Timestamps:</strong> Pulsing badges show current segment being typed</li>
+                    <li><strong>Typing Cursor:</strong> Blinking cursor follows the text as it types</li>
+                    <li><strong>Copy Button:</strong> Instantly copy all transcribed text</li>
+                    <li><strong>Download Button:</strong> Save as .txt file</li>
+                </ul>
+            </div>
+
+            <div class="manual-section">
+                <h2>❓ Troubleshooting</h2>
+                <h3>Error: "Could not understand audio"</h3>
+                <p>Solution: Audio may be unclear or have heavy background noise. Try a clearer recording.</p>
+                
+                <h3>YouTube download fails</h3>
+                <p>Solution: Some videos are restricted. Try a different public video or use the file upload method.</p>
+                
+                <h3>Long processing time</h3>
+                <p>Solution: Longer videos take more time. The typing animation keeps you entertained during the wait!</p>
+            </div>
+
+            <div class="manual-section">
+                <h2>👨‍💻 Developer</h2>
+                <p>Developed with ❤️ by <strong>Rakib Hasan</strong></p>
+                <p>GitHub: <a href="https://github.com/TheZeroHz" target="_blank">@TheZeroHz</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="logo">
+            <h1>N.A.M.O.R. x BUBT HUB</h1>
+            <p>Advanced Audio Transcription System</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('youtube')">🎥 YouTube URL</button>
+            <button class="tab" onclick="switchTab('upload')">📁 Upload Audio/Video</button>
+        </div>
+
+        <!-- YouTube Tab -->
+        <div id="youtube-tab" class="tab-content active">
+            <div class="youtube-input-container">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="youtubeUrl" 
+                        class="youtube-input" 
+                        placeholder="Paste YouTube URL here (e.g., https://www.youtube.com/watch?v=...)"
+                    />
+                    <button class="btn-transcribe" onclick="transcribeYoutube()">Transcribe</button>
+                </div>
+                <div class="youtube-hint">
+                    💡 Supports YouTube videos, shorts, and embedded links
+                </div>
+            </div>
+
+            <div class="video-info" id="videoInfo">
+                <div class="info-title" id="videoTitle"></div>
+                <div class="info-detail" id="videoDuration"></div>
+            </div>
+        </div>
+
+        <!-- Upload Tab -->
+        <div id="upload-tab" class="tab-content">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">🎬</div>
+                <div class="upload-text">Drag & Drop your audio or video file here</div>
+                <div class="upload-hint">MP3, WAV, MP4, AVI, MKV, MOV, FLV, WMV, WebM and more</div>
+                <input type="file" id="fileInput" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.wma,.mp4,.avi,.mkv,.mov,.flv,.wmv,.webm,.m4v,.mpeg,.mpg,.3gp" />
+            </div>
+
+            <div class="file-info" id="fileInfo">
+                <div class="info-title" id="fileName"></div>
+                <div class="info-detail" id="fileSize"></div>
+            </div>
+        </div>
+
+        <!-- Progress (shared) -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill">0%</div>
+            </div>
+            <div class="progress-message" id="progressMessage">Initializing...</div>
+        </div>
+
+        <!-- Results (shared) -->
+        <div class="transcription-result" id="transcriptionResult">
+            <div class="transcription-header">
+                <div class="transcription-title" id="transcriptionTitle">📝 Transcription Result</div>
+                <div class="transcription-actions">
+                    <button class="btn-action" onclick="copyTranscription()">📋 Copy</button>
+                    <button class="btn-action download" onclick="downloadTranscription()">💾 Download</button>
+                </div>
+            </div>
+            <div class="transcription-text" id="transcriptionText"></div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <center>
+            <button class="btn-reset" id="resetBtn" style="display:none;" onclick="resetForm()">Process Another</button>
+        </center>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">N.A.M.O.R.</div>
+                <div class="footer-divider"></div>
+                <div class="developer-credit">
+                    Developed by <a href="https://github.com/TheZeroHz" target="_blank" class="developer-name">Rakib Hasan</a>
+                </div>
+            </div>
+            <a href="https://github.com/TheZeroHz" target="_blank" class="github-link">
+                <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        let currentTranscription = '';
+        let currentVideoTitle = '';
+        let partialTranscriptions = [];
+        let isLiveTranscribing = false;
+        let typingQueue = [];
+        let isTyping = false;
+        let currentTypingElement = null;
+        let typingSpeed = 25; // For STT only (captions display instantly)
+        let transcriptionSource = ''; // Track if captions or audio
+
+        // Tech quotes array
+        const techQuotes = [
+            "The best way to predict the future is to invent it. - Alan Kay",
+            "Code is like humor. When you have to explain it, it's bad. - Cory House",
+            "First, solve the problem. Then, write the code. - John Johnson",
+            "Any fool can write code that a computer can understand. Good programmers write code that humans can understand. - Martin Fowler",
+            "Experience is the name everyone gives to their mistakes. - Oscar Wilde",
+            "The only way to learn a new programming language is by writing programs in it. - Dennis Ritchie",
+            "Innovation distinguishes between a leader and a follower. - Steve Jobs",
+            "Technology is best when it brings people together. - Matt Mullenweg",
+            "The advance of technology is based on making it fit in so that you don't really even notice it. - Bill Gates",
+            "Simplicity is the soul of efficiency. - Austin Freeman"
+        ];
+
+        // Typing speed calibration:
+        // - Captions: INSTANT (no animation - we already have the text!)
+        // - STT: 25ms per char (slower - simulates "thinking" while transcribing)
+
+        // Initialize clock and quote
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('currentTime').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function loadRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * techQuotes.length);
+            document.getElementById('quoteText').textContent = techQuotes[randomIndex];
+        }
+
+        // Modal functions
+        function openManual() {
+            document.getElementById('userManual').classList.add('active');
+        }
+
+        function closeManual() {
+            document.getElementById('userManual').classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('userManual');
+            if (event.target === modal) {
+                closeManual();
+            }
+        }
+
+        // Initialize on page load
+        updateClock();
+        loadRandomQuote();
+        setInterval(updateClock, 1000);
+        setInterval(loadRandomQuote, 30000); // Change quote every 30 seconds
+
+        function typeWriter(element, text, speed = typingSpeed) {
+            return new Promise((resolve) => {
+                let i = 0;
+                const cursor = document.createElement('span');
+                cursor.className = 'typing-cursor';
+                
+                const textSpan = document.createElement('span');
+                textSpan.className = 'typing-text';
+                element.appendChild(textSpan);
+                element.appendChild(cursor);
+                
+                function type() {
+                    if (i < text.length) {
+                        textSpan.textContent += text.charAt(i);
+                        i++;
+                        // Gradually speed up for longer texts
+                        const currentSpeed = Math.max(15, speed - (i / 50));
+                        setTimeout(type, currentSpeed);
+                    } else {
+                        cursor.remove();
+                        resolve();
+                    }
+                }
+                
+                type();
+            });
+        }
+
+        function addToTypingQueue(element, text) {
+            typingQueue.push({ element, text });
+            if (!isTyping) {
+                processTypingQueue();
+            }
+        }
+
+        async function processTypingQueue() {
+            if (typingQueue.length === 0) {
+                isTyping = false;
+                return;
+            }
+            
+            isTyping = true;
+            const { element, text } = typingQueue.shift();
+            await typeWriter(element, text, typingSpeed);
+            processTypingQueue();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+            
+            resetForm();
+        }
+
+        function transcribeYoutube() {
+            const url = document.getElementById('youtubeUrl').value.trim();
+            
+            if (!url) {
+                showError('Please enter a YouTube URL');
+                return;
+            }
+
+            const videoInfo = document.getElementById('videoInfo');
+            const progressContainer = document.getElementById('progressContainer');
+            const errorMessage = document.getElementById('errorMessage');
+            const transcriptionResult = document.getElementById('transcriptionResult');
+
+            videoInfo.classList.remove('active');
+            progressContainer.classList.add('active');
+            errorMessage.classList.remove('active');
+            transcriptionResult.classList.remove('active');
+            partialTranscriptions = [];
+            isLiveTranscribing = true;
+
+            fetch('/transcribeYoutube', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: url })
+            }).then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                function processStream() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) {
+                            isLiveTranscribing = false;
+                            document.getElementById('transcriptionResult').classList.remove('live');
+                            return;
+                        }
+
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop();
+
+                        lines.forEach(line => {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    const data = JSON.parse(line.substring(6));
+                                    updateProgress(data.progress, data.message);
+
+                                    if (data.video_title) {
+                                        currentVideoTitle = data.video_title;
+                                        document.getElementById('videoTitle').textContent = data.video_title;
+                                        document.getElementById('videoInfo').classList.add('active');
+                                    }
+
+                                    if (data.partial) {
+                                        addPartialTranscription(data.partial);
+                                    }
+
+                                    if (data.transcriptions) {
+                                        transcriptionSource = data.source || '';
+                                        finalizeTranscription(data.transcriptions);
+                                    } else if (data.error) {
+                                        showError(data.error);
+                                        isLiveTranscribing = false;
+                                    }
+                                } catch (e) {
+                                    console.error('Parse error:', e);
+                                }
+                            }
+                        });
+
+                        processStream();
+                    });
+                }
+
+                processStream();
+            }).catch(error => {
+                showError('Network error: ' + error.message);
+                isLiveTranscribing = false;
+            });
+        }
+
+        function addPartialTranscription(item) {
+            partialTranscriptions.push(item);
+            
+            const transcriptionResult = document.getElementById('transcriptionResult');
+            const transcriptionText = document.getElementById('transcriptionText');
+            
+            if (!transcriptionResult.classList.contains('active')) {
+                transcriptionResult.classList.add('active');
+                transcriptionResult.classList.add('live');
+                document.getElementById('transcriptionTitle').innerHTML = `
+                    📝 Transcription Result
+                    <span class="live-indicator">
+                        <span class="live-dot"></span>
+                        LIVE
+                        <span class="sound-wave">
+                            <span class="sound-bar"></span>
+                            <span class="sound-bar"></span>
+                            <span class="sound-bar"></span>
+                            <span class="sound-bar"></span>
+                        </span>
+                    </span>
+                `;
+            }
+            
+            // Create new transcript item
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'transcript-item new';
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'transcript-time active';
+            timeDiv.innerHTML = `⏱️ ${item.time}`;
+            
+            const textDiv = document.createElement('div');
+            textDiv.className = 'transcript-text';
+            
+            itemDiv.appendChild(timeDiv);
+            itemDiv.appendChild(textDiv);
+            transcriptionText.appendChild(itemDiv);
+            
+            // Add typing animation
+            addToTypingQueue(textDiv, item.text);
+            
+            // Remove active class from timestamp after typing completes
+            const estimatedTime = item.text.length * typingSpeed + 500;
+            setTimeout(() => {
+                timeDiv.classList.remove('active');
+            }, estimatedTime);
+            
+            transcriptionText.scrollTop = transcriptionText.scrollHeight;
+        }
+
+        function finalizeTranscription(transcriptions) {
+            isLiveTranscribing = false;
+            const transcriptionResult = document.getElementById('transcriptionResult');
+            transcriptionResult.classList.remove('live');
+            
+            let sourceBadge = '';
+            if (transcriptionSource === 'captions') {
+                sourceBadge = '<span class="source-badge captions"><span class="source-icon">📄</span>CC</span>';
+            } else if (transcriptionSource === 'audio') {
+                sourceBadge = '<span class="source-badge audio"><span class="source-icon">🎤</span>STT</span>';
+            }
+            
+            document.getElementById('transcriptionTitle').innerHTML = `📝 Transcription Result${sourceBadge}`;
+            
+            currentTranscription = transcriptions.map(t => `[${t.time}] ${t.text}`).join('\n\n');
+            document.getElementById('resetBtn').style.display = 'inline-block';
+        }
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragging');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragging');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragging');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            const allowedFormats = [
+                // Audio formats
+                '.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac', '.wma',
+                // Video formats
+                '.mp4', '.avi', '.mkv', '.mov', '.flv', '.wmv', '.webm', 
+                '.m4v', '.mpeg', '.mpg', '.3gp'
+            ];
+            
+            const fileExt = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+            
+            if (!allowedFormats.includes(fileExt)) {
+                showError('Please upload a supported audio or video file.');
+                return;
+            }
+
+            const videoFormats = ['.mp4', '.avi', '.mkv', '.mov', '.flv', '.wmv', '.webm', '.m4v', '.mpeg', '.mpg', '.3gp'];
+            const isVideo = videoFormats.includes(fileExt);
+            const fileType = isVideo ? 'Video' : 'Audio';
+            
+            const fileInfo = document.getElementById('fileInfo');
+            document.getElementById('fileName').textContent = `${fileType} File: ${file.name}`;
+            document.getElementById('fileSize').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            
+            if (isVideo) {
+                fileInfo.classList.add('video-file');
+            } else {
+                fileInfo.classList.remove('video-file');
+            }
+            
+            fileInfo.classList.add('active');
+
+            uploadFile(file);
+        }
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('audio', file);
+
+            document.getElementById('progressContainer').classList.add('active');
+            uploadArea.style.display = 'none';
+            document.getElementById('errorMessage').classList.remove('active');
+            document.getElementById('transcriptionResult').classList.remove('active');
+            partialTranscriptions = [];
+            isLiveTranscribing = true;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/uploadAudio', true);
+
+            let lastProgress = 0;
+            let partialTexts = [];
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 3) {
+                    const newData = xhr.responseText.substring(lastProgress);
+                    lastProgress = xhr.responseText.length;
+
+                    const lines = newData.split('\n');
+                    lines.forEach(line => {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.substring(6));
+                                updateProgress(data.progress, data.message);
+
+                                if (data.partial_text) {
+                                    addPartialText(data.partial_text);
+                                }
+
+                                if (data.transcription) {
+                                    finalizeTextTranscription(data.transcription);
+                                } else if (data.error) {
+                                    showError(data.error);
+                                    isLiveTranscribing = false;
+                                }
+                            } catch (e) {
+                                console.error('Parse error:', e);
+                            }
+                        }
+                    });
+                }
+            };
+
+            xhr.onerror = function() {
+                showError('Network error occurred. Please try again.');
+                isLiveTranscribing = false;
+            };
+
+            xhr.send(formData);
+        }
+
+        function addPartialText(text) {
+            const transcriptionResult = document.getElementById('transcriptionResult');
+            const transcriptionText = document.getElementById('transcriptionText');
+            
+            if (!transcriptionResult.classList.contains('active')) {
+                transcriptionResult.classList.add('active');
+                transcriptionResult.classList.add('live');
+                document.getElementById('transcriptionTitle').innerHTML = `
+                    📝 Transcription Result
+                    <span class="live-indicator">
+                        <span class="live-dot"></span>
+                        LIVE
+                        <span class="sound-wave">
+                            <span class="sound-bar"></span>
+                            <span class="sound-bar"></span>
+                            <span class="sound-bar"></span>
+                            <span class="sound-bar"></span>
+                        </span>
+                    </span>
+                `;
+                
+                const textDiv = document.createElement('div');
+                textDiv.className = 'transcript-text';
+                transcriptionText.appendChild(textDiv);
+                currentTypingElement = textDiv;
+                
+                addToTypingQueue(textDiv, text);
+            } else {
+                // Add space and continue typing
+                if (currentTypingElement) {
+                    addToTypingQueue(currentTypingElement, ' ' + text);
+                }
+            }
+            
+            transcriptionText.scrollTop = transcriptionText.scrollHeight;
+        }
+
+        function finalizeTextTranscription(text) {
+            isLiveTranscribing = false;
+            const transcriptionResult = document.getElementById('transcriptionResult');
+            transcriptionResult.classList.remove('live');
+            document.getElementById('transcriptionTitle').innerHTML = '📝 Transcription Result';
+            
+            currentTranscription = text;
+            document.getElementById('resetBtn').style.display = 'inline-block';
+        }
+
+        function updateProgress(percent, message) {
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressFill').textContent = percent + '%';
+            document.getElementById('progressMessage').textContent = message;
+            
+            if (percent === 100) {
+                document.getElementById('progressContainer').classList.remove('processing');
+            } else {
+                document.getElementById('progressContainer').classList.add('processing');
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorMessage').classList.add('active');
+            document.getElementById('resetBtn').style.display = 'inline-block';
+            document.getElementById('transcriptionResult').classList.remove('live');
+        }
+
+        function copyTranscription() {
+            const text = currentTranscription || document.getElementById('transcriptionText').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        function downloadTranscription() {
+            const blob = new Blob([currentTranscription], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentVideoTitle ? `${currentVideoTitle}_transcription.txt` : 'transcription.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function resetForm() {
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.classList.remove('active');
+            fileInfo.classList.remove('video-file');
+            document.getElementById('videoInfo').classList.remove('active');
+            document.getElementById('progressContainer').classList.remove('active');
+            document.getElementById('transcriptionResult').classList.remove('active');
+            document.getElementById('transcriptionResult').classList.remove('live');
+            document.getElementById('errorMessage').classList.remove('active');
+            uploadArea.style.display = 'block';
+            document.getElementById('resetBtn').style.display = 'none';
+            fileInput.value = '';
+            document.getElementById('youtubeUrl').value = '';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressFill').textContent = '0%';
+            document.getElementById('transcriptionText').innerHTML = '';
+            document.getElementById('transcriptionTitle').innerHTML = '📝 Transcription Result';
+            currentTranscription = '';
+            currentVideoTitle = '';
+            partialTranscriptions = [];
+            isLiveTranscribing = false;
+            typingQueue = [];
+            isTyping = false;
+            currentTypingElement = null;
+            transcriptionSource = '';
+        }
+    </script>
+</body>
+</html>
