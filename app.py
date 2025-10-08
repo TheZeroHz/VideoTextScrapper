@@ -7,7 +7,20 @@ import json
 import time
 import yt_dlp
 import re
+import subprocess
+import sys
 
+# Auto-update yt-dlp on startup
+def update_ytdlp():
+    try:
+        print("🔄 Checking for yt-dlp updates...")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "yt-dlp"])
+        print("✅ yt-dlp updated successfully!")
+    except Exception as e:
+        print(f"⚠️ Could not update yt-dlp: {e}")
+
+# Run update on startup
+update_ytdlp()
 app = Flask(__name__)
 CORS(app)
 
